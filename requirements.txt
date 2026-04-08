@@ -1,0 +1,27 @@
+# Зависимости учебного курса
+# Установка: pip install -r requirements.txt
+
+# --- Модули 0-2: Python и OpenAI API ---
+openai>=1.30.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# --- Модули 3-5: LangChain + LangGraph ---
+langchain>=0.2.0
+langchain-openai>=0.1.0
+langchain-community>=0.2.0
+langgraph>=0.2.0
+
+# --- Модуль 6: FastAPI для API ---
+fastapi>=0.111.0
+uvicorn>=0.30.0
+pydantic>=2.7.0
+
+# --- Модуль 6: Streamlit UI ---
+streamlit>=1.35.0
+
+# --- Модуль 7: Мониторинг ---
+prometheus-client>=0.20.0
+
+# --- Утилиты ---
+typing-extensions>=4.11.0
