@@ -13,7 +13,7 @@
 
 ## 🌐 FastAPI: API за 5 минут
 
-**API** (веб-версия) — это программа, которая получает запросы из интернета и возвращает данные.
+![Запрос идёт к агенту и возвращает ответ](https://user-gen-media-assets.s3.amazonaws.com/gemini_images/fd0b9ae7-b4aa-4976-a371-c2f9fa7a5ba6.png)
 
 ```python
 from fastapi import FastAPI
@@ -21,84 +21,57 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-class ApplicationRequest(BaseModel):
+class AppRequest(BaseModel):
     text: str
-    subject: str
 
 @app.get("/health")
-def health():
-    return {"status": "ok"}
+def health(): return {"status": "ok"}
 
-@app.post("/api/v1/process/dzo")
-async def process_dzo(req: ApplicationRequest):
-    # Вот здесь будет стоять вызов агента:
-    result = agent.invoke({"input": req.text})
-    return {"result": result["output"]}
+@app.post("/check")
+async def check(req: AppRequest):
+    result = agent.process(req.text)
+    return {"result": result}
 ```
 
-```
-Визуально:
-
-  Пользователь/сайт → POST /api/v1/process/dzo
-           (запрос с JSON)
-                   ↓
-           [Наш FastAPI]
-                   ↓
-           [Агент LangGraph]
-                   ↓
-           [Генерирует ответ]
-                   ↓
-  Пользователь ← JSON с результатом
+```bash
+uvicorn agent_app:app --reload
+# Swagger UI: http://localhost:8000/docs
 ```
 
 ---
 
 ## 🐳 Docker: упаковка для приложения
 
-Docker — это коробка (контейнер) для вашей программы. Идёт везде одинаково.
-
 ```
 Без Docker:       С Docker:
-
-"У меня не    →  Всё в контейнере:
-работает!"       Python 3.11
-                   все зависимости
-                   наш код
-                   → работает везде!
+"У меня не    →  Python 3.11 + все зависимости
+работает!"       + наш код → работает везде!
 ```
 
 ---
 
 ## 🔍 Анализ реального проекта
 
-Откройте файлы в исходном репозитории [dzo-tz-agents](https://github.com/OlegKarenkikh/dzo-tz-agents):
+[dzo-tz-agents](https://github.com/OlegKarenkikh/dzo-tz-agents):
 
 ```
-dzo-tz-agents/
-├── agent1_dzo_inspector/
-│   ├── agent.py        ← здесь create_react_agent
-│   ├── tools.py        ← здесь @tool функции
-│   └── runner.py       ← здесь IMAP-поллинг
-├── api/
-│   └── app.py          ← FastAPI эндпоинты
-├── shared/
-│   ├── llm.py          ← build_llm()
-│   └── logger.py       ← setup_logger()
-└── main.py             ← точка входа
+agent1_dzo_inspector/
+  agent.py   ← create_react_agent
+  tools.py   ← @tool функции
+api/app.py   ← FastAPI эндпоинты
+shared/llm.py ← build_llm()
 ```
 
 ---
 
 ## 📝 Практика
 
-См. папку [`practice/`](practice/)
+[`practice/`](practice/)
 
 ## ✅ Чек-лист
 
-- [ ] Запустил FastAPI с одним эндпоинтом
+- [ ] Запустил FastAPI
 - [ ] Добавил эндпоинт с агентом
-- [ ] Прочитал `agent1_dzo_inspector/agent.py` и понял каждую строку
+- [ ] Прочитал `agent1_dzo_inspector/agent.py`
 
----
-
-**Следующий:** [Модуль 7 — Продвинутый →](../module-07/README.md)
+**Следующий:** [Модуль 7 →](../module-07/README.md)
