@@ -6,79 +6,56 @@
 
 - Что такое граф и узлы
 - Как работает состояние (State)
-- Как строить цикли в графе
-- Почему `dzo-tz-agents` использует LangGraph, а не LangChain
+- Как строить циклы в графе
+- Почему `dzo-tz-agents` использует LangGraph
 
 ---
 
 ## 🔷 Что такое граф?
 
-Граф — это схема, где есть **узлы** (действия) и **рёбра** (переходы между ними).
+![Граф решений с состоянием](https://user-gen-media-assets.s3.amazonaws.com/gemini_images/d6a674bb-3b35-4215-81f2-4c457c5c6fc1.png)
+
+Граф — схема, где есть **узлы** (действия) и **рёбра** (переходы между ними).
 
 ```
-Граф агента Инспектора ДЗО:
-
-  [START]
-     ↓
-  [Получить письмо]
-     ↓
-  [Проверить заявку]
-     ↓
-  ◄──[Решение]
-  │        ││
-  │     [Требует дополнения]
-  │                ↓
-  │     [Отправить запрос]──▶ожидаем ответа...
-  │                                  ↓
-  │           [Получить ответ]
-  │                                  ↓
-  │───────────────────────────────────────▶[Проверить снова]
-  [Полная] → [Зарегистрировать] → [Ответить]
-                                  ↓
-                                [END]
+START → [Проверка] → развилка:
+  Полная? → [Регистрация] → END
+  Неполная? → [Запрос] → END
 ```
 
 ---
 
 ## 📦 Состояние (State)
 
-Состояние — это общий ящик, который передаётся между узлами.
-
 ```python
-from typing import TypedDict, Annotated, Sequence
-from langchain_core.messages import BaseMessage
-import operator
+from typing import TypedDict
 
-# Состояние нашего агента
 class AgentState(TypedDict):
-    messages: Annotated[Sequence[BaseMessage], operator.add]  # история сообщений
-    статус: str      # текущий статус заявки
-    ошибки: list   # список ошибок
+    messages: list   # история сообщений
+    status: str      # текущий статус
+    errors: list     # ошибки
 ```
 
 ---
 
 ## 🛠️ create_react_agent
 
-В реальном проекте `dzo-tz-agents` используется `langgraph.prebuilt.create_react_agent` — готовый граф с ReAct:
-
 ```python
 from langgraph.prebuilt import create_react_agent
 
-# Создаём готовый агент-граф:
-grapher = create_react_agent(
+agent = create_react_agent(
     model=llm,
     tools=[check_tool, register_tool],
-    prompt="Ты — инспектор заявок.",
+    prompt="Ты — инспектор.",
 )
-
-# Запуск графа:
-result = grapher.invoke({
-    "messages": [{"role": "user", "content": "Проверь заявку..."}]
-})
+result = agent.invoke({"messages": [{"role": "user", "content": "заявка..."}]})
 ```
 
-Именно так написан реальный `create_dzo_agent()` в `agent1_dzo_inspector/agent.py`.
+---
+
+## 📝 Практика
+
+[`practice/`](practice/)
 
 ## ✅ Чек-лист
 
@@ -86,6 +63,4 @@ result = grapher.invoke({
 - [ ] Понимаю, что такое State
 - [ ] Разобрался в `agent1_dzo_inspector/agent.py`
 
----
-
-**Следующий:** [Модуль 6 — Проект →](../module-06/README.md)
+**Следующий:** [Модуль 6 →](../module-06/README.md)
