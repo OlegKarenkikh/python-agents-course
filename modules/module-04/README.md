@@ -13,16 +13,9 @@
 
 ## 🧩 Что такое LangChain?
 
-LangChain — это **набор блоков**, из которых собираются приложения с LLM.
+![Конструктор блоков для агента](https://user-gen-media-assets.s3.amazonaws.com/gemini_images/9340adb2-6d81-4c6f-a645-12e0737c685e.png)
 
-```
-Без LangChain:                   С LangChain:
-
-Написать API-клиент    →   from langchain_openai import ChatOpenAI
-Написать память          →   + ChatMessageHistory()
-Написать обработку tools →   + @tool + AgentExecutor
-Написать парсинг       →   + StrOutputParser()
-```
+LangChain — **набор блоков**, из которых собираются приложения с LLM.
 
 ---
 
@@ -33,62 +26,40 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# Три блока связаны в цепочку (оператор |)
 промпт = ChatPromptTemplate.from_messages([
     ("system", "Ты — инспектор. Отвечай кратко."),
     ("user", "{question}"),
 ])
-модель = ChatOpenAI(model="gpt-4o-mini")
-парсер = StrOutputParser()
-
-# Строим цепочку:
-цепочка = промпт | модель | парсер
-
-# Запускаем:
-рез = цепочка.invoke({"question": "Проверь заявку: название: тест"})
-print(рез)  # строка с ответом
+цепочка = промпт | ChatOpenAI(model="gpt-4o-mini") | StrOutputParser()
+рез = цепочка.invoke({"вопрос": "Проверь заявку: название: тест"})
 ```
 
 ```
-Цепочка визуально:
-
-вопрос → [Промпт] → [Модель] → [Парсер] → результат
-  str        мессажи     LLM        str
+цепочка: вопрос → [Промпт] → [Модель] → [Парсер] → str
 ```
 
 ---
 
 ## 🧠 Память (Memory)
 
-Без памяти LLM не помнит предыдущие сообщения. В `dzo-tz-agents` используется `ConversationBufferWindowMemory(k=20)`.
+Без памяти LLM не помнит предыдущие сообщения.
 
 ```python
 from langchain.memory import ConversationBufferWindowMemory
-
-память = ConversationBufferWindowMemory(
-    k=5,           # храним последние 5 обменов
-    return_messages=True,
-)
-
-память.save_context(
-    {"input": "Проверь заявку название: тест"},
-    {"output": "Полная!"},
-)
-print(память.load_memory_variables({}))
+память = ConversationBufferWindowMemory(k=5, return_messages=True)
+память.save_context({"input": "заявка"}, {"output": "полная"})
 ```
 
 ---
 
 ## 📝 Практика
 
-См. папку [`practice/`](practice/)
+[`practice/`](practice/)
 
 ## ✅ Чек-лист
 
-- [ ] Собрал цепочку из prompt | model | parser
-- [ ] Добавил память к цепочке
-- [ ] Создал агент с инструментами через LangChain
+- [ ] Собрал цепочку prompt | model | parser
+- [ ] Добавил память
+- [ ] Создал агент с инструментами
 
----
-
-**Следующий:** [Модуль 5 — LangGraph →](../module-05/README.md)
+**Следующий:** [Модуль 5 →](../module-05/README.md)
