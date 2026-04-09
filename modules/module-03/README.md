@@ -26,10 +26,14 @@
      ↓
 Действует: register_application_tool()
      ↓
-Отвечает: "Заявка №123 зарегистрирована!"
+Отвечает: "Заявка №2457 зарегистрирована!"
 ```
 
+---
+
 ## 🔄 Петля ReAct
+
+![Цикл ReAct — думает, действует, наблюдает](https://user-gen-media-assets.s3.amazonaws.com/gemini_images/49621d98-d0ff-4d46-83df-370db151fc25.png)
 
 **ReAct** = **Re**ason + **Act**
 
@@ -40,14 +44,12 @@
  │  2. ACTION  — вызывает tool │
  │     ↓                          │
  │  3. OBSERVATION — видит рез  │
- │     ↓                          │
- │  ... повторяет ...            │
- │     ↓                          │
+ │     ↓ (повторяет до конца)  │
  │  4. FINAL ANSWER                │
  └──────────────────────────────────┘
 ```
 
-Именно эту логику реализует `create_react_agent` в `agent1_dzo_inspector/agent.py`.
+---
 
 ## 🔧 Инструменты (Tools)
 
@@ -59,15 +61,18 @@ def check_application_tool(text: str) -> str:
     """Проверяет заявку на полноту.
     Используй, когда нужно проверить полноту.
     """
-    errors = []
     if "название" not in text.lower():
-        errors.append("название")
-    if errors:
-        return f"Неполно: {', '.join(errors)}"
+        return "Неполная: нет названия"
     return "Заявка полная!"
 ```
 
-> Docstring — описание инструмента. Агент читает его, чтобы знать, когда вызывать.
+> Docstring — агент читает его, чтобы знать, когда вызывать инструмент.
+
+---
+
+## 📝 Практика
+
+[`practice/`](practice/)
 
 ## ✅ Чек-лист
 
@@ -75,6 +80,4 @@ def check_application_tool(text: str) -> str:
 - [ ] Создал инструмент с `@tool`
 - [ ] Написал простого агента
 
----
-
-**Следующий:** [Модуль 4 — LangChain →](../module-04/README.md)
+**Следующий:** [Модуль 4 →](../module-04/README.md)
